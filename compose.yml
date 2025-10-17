@@ -1,0 +1,27 @@
+services:
+  go-weather:
+    build:
+      context: ./go-weather
+      dockerfile: Dockerfile
+    environment:
+      - CEP_API=https://viacep.com.br/ws/{arg}/json/
+      - WEATHER_API=http://api.weatherapi.com/v1/current.json?key=a30fdcb565ee48538a6164158250410&q={arg}
+    ports:
+      - "8081:8081"
+    networks:
+      - go-weather-network
+
+  validator:
+    build:
+      context: ./validator
+      dockerfile: Dockerfile
+    environment:
+      - WEATHER_API=http://go-weather:8081/weather?cep=
+    ports:
+      - "8080:8080"
+    networks:
+      - go-weather-network
+
+networks:
+  go-weather-network:
+    driver: bridge
