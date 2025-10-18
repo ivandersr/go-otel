@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - WEATHER_API=http://go-weather:8081/weather?cep=
+      - COLLECTOR_URL=http://zipkin:9411/api/v2/spans
+
     ports:
       - "8080:8080"
     networks:

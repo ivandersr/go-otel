@@ -27,7 +27,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/weather", otelhttp.NewHandler(http.HandlerFunc(weatherHandler), "weather"))
+	mux.Handle("/weather", otelhttp.NewHandler(http.HandlerFunc(weatherHandler), "weather-handler"))
 
 	if err := http.ListenAndServe(":8081", mux); err != nil {
 		panic(err)
@@ -36,7 +36,7 @@ func main() {
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	tracer := otel.Tracer("go-weather")
-	_, cepSpan := tracer.Start(context.Background(), "cep")
+	_, cepSpan := tracer.Start(context.Background(), "cep-span")
 
 	requestedCep := r.URL.Query().Get("cep")
 	cepURL := os.Getenv("CEP_API")
@@ -47,10 +47,10 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cepSpan.End()
 
-	_, weatherSpan := tracer.Start(context.Background(), "weather")
+	_, weatherSpan := tracer.Start(context.Background(), "weather-span")
 	defer weatherSpan.End()
 	weatherURL := os.Getenv("WEATHER_API")
-	weather, err := weather.GetWeather(weatherURL, result.City, result.State)
+	weather, err := weather.GetWeather(weatherURL, result.City, result.State, result.CityOriginal)
 	if err != nil {
 		http.Error(w, "can not find weather for the given zipcode", http.StatusNotFound)
 		return

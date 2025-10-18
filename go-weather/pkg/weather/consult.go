@@ -17,12 +17,13 @@ type Weather struct {
 }
 
 type WeatherResult struct {
+	City  string `json:"city"`
 	TempC string `json:"temp_C"`
 	TempF string `json:"temp_F"`
 	TempK string `json:"temp_K"`
 }
 
-func GetWeather(weatherURL, city, state string) (*WeatherResult, error) {
+func GetWeather(weatherURL, city, state, cityOriginal string) (*WeatherResult, error) {
 	queryString := fmt.Sprintf("%s,%s", city, state)
 	url := utils.InjectArg(queryString, weatherURL)
 
@@ -44,6 +45,7 @@ func GetWeather(weatherURL, city, state string) (*WeatherResult, error) {
 	}
 
 	return &WeatherResult{
+		City:  cityOriginal,
 		TempC: fmt.Sprintf("%.2f", w.Current.TempC),
 		TempF: fmt.Sprintf("%.2f", w.Current.TempF),
 		TempK: fmt.Sprintf("%.2f", w.Current.TempC+273.15),

@@ -10,8 +10,9 @@ import (
 )
 
 type CepResult struct {
-	City  string
-	State string
+	City         string
+	State        string
+	CityOriginal string
 }
 
 type Cep struct {
@@ -42,7 +43,8 @@ func GetLocation(cepURL, cep string) (*CepResult, error) {
 		return nil, fmt.Errorf("não foi possível encontrar a cidade com o CEP informado")
 	}
 	return &CepResult{
-		City:  city,
-		State: state,
+		City:         city,
+		State:        state,
+		CityOriginal: c.Localidade,
 	}, nil
 }

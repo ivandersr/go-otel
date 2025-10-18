@@ -18,6 +18,7 @@ type WeatherRequest struct {
 }
 
 type WeatherResponse struct {
+	City  string `json:"city"`
 	TempC string `json:"temp_C"`
 	TempF string `json:"temp_F"`
 	TempK string `json:"temp_K"`
