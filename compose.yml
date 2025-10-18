@@ -6,6 +6,7 @@ services:
     environment:
       - CEP_API=https://viacep.com.br/ws/{arg}/json/
       - WEATHER_API=http://api.weatherapi.com/v1/current.json?key=a30fdcb565ee48538a6164158250410&q={arg}
+      - COLLECTOR_URL=http://zipkin:9411/api/v2/spans
     ports:
       - "8081:8081"
     networks:
@@ -19,6 +20,14 @@ services:
       - WEATHER_API=http://go-weather:8081/weather?cep=
     ports:
       - "8080:8080"
+    networks:
+      - go-weather-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
     networks:
       - go-weather-network
 
