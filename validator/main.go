@@ -18,10 +18,10 @@ type WeatherRequest struct {
 }
 
 type WeatherResponse struct {
-	City  string `json:"city"`
-	TempC string `json:"temp_C"`
-	TempF string `json:"temp_F"`
-	TempK string `json:"temp_K"`
+	City  string  `json:"city"`
+	TempC float64 `json:"temp_C"`
+	TempF float64 `json:"temp_F"`
+	TempK float64 `json:"temp_K"`
 }
 
 const (
@@ -51,7 +51,7 @@ func main() {
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	tracer := otel.Tracer("validator")
-	_, validatorSpan := tracer.Start(context.Background(), "validator-span")
+	ctx, validatorSpan := tracer.Start(r.Context(), "validator-span")
 	defer validatorSpan.End()
 
 	if r.Method != http.MethodPost {
@@ -73,7 +73,12 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	weatherURL := os.Getenv("WEATHER_API")
-	resp, err := http.Get(weatherURL + parsedCep)
+	instrumentedClient := http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+
+	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, weatherURL+parsedCep, nil)
+	resp, err := instrumentedClient.Do(req)
 	if err != nil {
 		http.Error(w, unexpectedError, http.StatusInternalServerError)
 		return

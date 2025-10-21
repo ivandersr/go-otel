@@ -36,7 +36,7 @@ func main() {
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	tracer := otel.Tracer("go-weather")
-	_, cepSpan := tracer.Start(context.Background(), "cep-span")
+	_, cepSpan := tracer.Start(r.Context(), "cep-span")
 
 	requestedCep := r.URL.Query().Get("cep")
 	cepURL := os.Getenv("CEP_API")
@@ -47,7 +47,7 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	cepSpan.End()
 
-	_, weatherSpan := tracer.Start(context.Background(), "weather-span")
+	_, weatherSpan := tracer.Start(r.Context(), "weather-span")
 	defer weatherSpan.End()
 	weatherURL := os.Getenv("WEATHER_API")
 	weather, err := weather.GetWeather(weatherURL, result.City, result.State, result.CityOriginal)

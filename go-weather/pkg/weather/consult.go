@@ -17,10 +17,10 @@ type Weather struct {
 }
 
 type WeatherResult struct {
-	City  string `json:"city"`
-	TempC string `json:"temp_C"`
-	TempF string `json:"temp_F"`
-	TempK string `json:"temp_K"`
+	City  string  `json:"city"`
+	TempC float64 `json:"temp_C"`
+	TempF float64 `json:"temp_F"`
+	TempK float64 `json:"temp_K"`
 }
 
 func GetWeather(weatherURL, city, state, cityOriginal string) (*WeatherResult, error) {
@@ -46,8 +46,8 @@ func GetWeather(weatherURL, city, state, cityOriginal string) (*WeatherResult, e
 
 	return &WeatherResult{
 		City:  cityOriginal,
-		TempC: fmt.Sprintf("%.2f", w.Current.TempC),
-		TempF: fmt.Sprintf("%.2f", w.Current.TempF),
-		TempK: fmt.Sprintf("%.2f", w.Current.TempC+273.15),
+		TempC: w.Current.TempC,
+		TempF: w.Current.TempF,
+		TempK: w.Current.TempC + 273.15,
 	}, nil
 }
